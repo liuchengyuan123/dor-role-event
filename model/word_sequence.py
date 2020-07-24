@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torchcrf
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 from model.embedding import Glove_Bert_Embedding

@@ -43,7 +43,7 @@ def train(reader, model):
             weight_decay=reader.config.parser['HP_l2']
         )
 
-    best_dev = -10
+    best_dev = -1000000000
 
     train_doc_idx, train_sentence_list_idx, train_tag_idx =\
         reader.read_from_file('train')
@@ -80,17 +80,41 @@ def train(reader, model):
             
             # the following three are train inputs
             train_doc = [train_doc_idx[idx] for idx in train_ids[start: end]]
-            train_sentence_list = [train_sentence_list_idx[idx] for idx in train_ids[start: end]]
+            train_sentence_list = [train_sentence_list_idx[idx]
+                                   for idx in train_ids[start: end]]
             train_tag = [train_tag_idx[idx] for idx in train_ids[start: end]]
             
             word_seq_tensor, word_seq_len, seq_order_recovery, sentence_tensor_list, tag_seq_tensor,\
-                seq_mask = batchify_generation(train_doc, train_sentence_list, train_tag, True)
-            loss, tag_seq = model.forward(sentence_tensor_list, word_seq_tensor, word_seq_len, tag_seq_tensor, seq_mask)
+                seq_mask = batchify_generation(
+                    train_doc, train_sentence_list, train_tag, True)
+            loss, tag_seq = model.forward(
+                sentence_tensor_list, word_seq_tensor, word_seq_len, tag_seq_tensor, seq_mask)
 
             loss.backward()
             optimizer.step()
 
             loss_sum += loss.item()
+            '''
+            if epoch % 200 == 0:
+                # generate dev data
+                dev_word_seq_tensor, dev_sentence_tensor_list, dev_tag_seq_tensor =\
+                    reader.read_from_file('dev')
+                dev_word_seq_tensor, dev_word_seq_len, dev_seq_order_recovery, dev_sentence_tensor_list, dev_tag_seq_tensor,\
+                    dev_seq_mask = batchify_generation(
+                        dev_word_seq_tensor, dev_sentence_tensor_list, dev_tag_seq_tensor, False)
+                
+                # develop
+                loss, _ = model.forward(dev_sentence_tensor_list, dev_word_seq_tensor,
+                                        dev_word_seq_len, dev_tag_seq_tensor, dev_seq_mask)
+                Print(f'dev loss {loss.item()} on batch {batch_id + 1}', 'information')
+                if loss.item() < best_dev:
+                    best_dev = loss.item()
+                    torch.save(model.state_dict(), 'sources/model.pkl')
+                    Print('Model saved at "sources/model.pkl"', 'success')
+                
+                del dev_word_seq_tensor, dev_word_seq_len, dev_seq_order_recovery,\
+                    dev_sentence_tensor_list, dev_tag_seq_tensor, dev_seq_mask
+            '''
         Print(f'average loss {loss_sum / batch_nums: .4f}')
 
 

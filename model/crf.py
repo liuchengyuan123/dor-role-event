@@ -59,7 +59,8 @@ class CRF(nn.Module):
         assert(tag_size == self.tagset_size+2)
         mask = mask.transpose(1, 0).contiguous()
         ins_num = seq_len * batch_size
-        # be careful the view shape, it is .view(ins_num, 1, tag_size) but not .view(ins_num, tag_size, 1)
+        # be careful the view shape, it is .view(ins_num, 1, tag_size)
+        # but not .view(ins_num, tag_size, 1)
         feats = feats.transpose(1, 0).contiguous().view(
             ins_num, 1, tag_size).expand(ins_num, tag_size, tag_size)
         # need to consider start

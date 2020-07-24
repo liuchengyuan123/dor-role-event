@@ -42,6 +42,7 @@
     \subsubsection{CRF}\label{crf}
     Lets try \emph{pytorch-crf} package. It is supposed to excel hand-made crf.
     \section{Details}
+    \textbf{This part not shown on PowerPoint.}
     \begin{enumerate}
         \item There is a scale factor in the embedding, which equals $\sqrt{\frac{embedding\_dim}{3}}$.
         It's for the cases when word not find in the pre-trained embedding dict. We apply random vector range in $(-scale, scale)$.
@@ -51,8 +52,8 @@
     \end{enumerate}
     \section{Questions}
     \begin{enumerate}
-        \item What does \emph{feature\_prefix} do?
-        \item There are extra empty data suffixed at the return Tensor of \emph{read\_instance}.
+        % \item What does \emph{feature\_prefix} do?
+        % \item There are extra empty data suffixed at the return Tensor of \emph{read\_instance}.
         \item In \emph{calculate\_PZ\_} from CRF model, view score to \emph{[batch size, sequence len, tag size, tag size]} then transpose? 
     \end{enumerate}
     \section{Optimization}
